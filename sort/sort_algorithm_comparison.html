@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主要ソートアルゴリズム詳細比較表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc;
+        }
+        th, td {
+            vertical-align: top;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #1f2937;
+            color: white;
+            font-weight: 600;
+            text-align: left;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+        pre {
+            background-color: #111827;
+            color: #d1d5db;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        .no-wrap {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="container mx-auto overflow-x-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">主要ソートアルゴリズム詳細比較表</h1>
+        <div class="shadow-lg rounded-lg overflow-hidden">
+            <table class="w-full min-w-[1200px]">
+                <thead>
+                    <tr>
+                        <th class="no-wrap">アルゴリズム</th>
+                        <th class="no-wrap">平均計算量</th>
+                        <th class="no-wrap">最悪計算量</th>
+                        <th class="no-wrap">安定性</th>
+                        <th class="w-1/3">コアとなる考え</th>
+                        <th>メリット</th>
+                        <th>デメリット</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    <tr>
+                        <td class="font-bold text-gray-800 no-wrap">バブルソート</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">安定</td>
+                        <td><pre><code>for (i=0; i&lt;n-1; ++i) {
+  for (j=n-1; i&lt;j; --j) {
+    if (a[j] &lt; a[j-1]) {
+      swap(&a[j], &a[j-1]);
+    }
+  }
+}</code></pre></td>
+                        <td>ロジックが隣接要素の比較と交換のみで構成され、直感的で実装が非常に容易である。</td>
+                        <td>データの状態に関わらず計算量がO(n<sup>2</sup>)となり、大規模データには全く実用的でない。</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-gray-800 no-wrap">選択ソート</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">不安定</td>
+                        <td><pre><code>for (i=0; i&lt;n-1; ++i) {
+  int min = i;
+  for (j=i+1; j&lt;n; ++j) {
+    if (a[j] &lt; a[min]) min=j;
+  }
+  if (min != i) swap(&a[i], &a[min]);
+}</code></pre></td>
+                        <td>未ソート部から最小値を見つけて一度だけ交換するため、要素の移動コストが高い場合に有利。</td>
+                        <td>データがほぼソート済みでも最小値探索のループは省略できず、計算量が改善されない。</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-gray-800 no-wrap">挿入ソート</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">安定</td>
+                        <td><pre><code>for (j=1; j&lt;n; ++j) {
+  tmp = a[j];
+  i = j - 1;
+  while (0 &lt;= i && tmp &lt; a[i]) {
+    a[i+1] = a[i];
+    --i;
+  }
+  a[i+1] = tmp;
+}</code></pre></td>
+                        <td>データが整列に近い状態だと比較・交換が減り、O(n)に近い性能を発揮する。</td>
+                        <td>逆順に並んでいるような最悪の場合、計算量がO(n<sup>2</sup>)となり大規模データには適さない。</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-gray-800 no-wrap">マージソート</td>
+                        <td class="no-wrap">O(n log n)</td>
+                        <td class="no-wrap">O(n log n)</td>
+                        <td class="no-wrap">安定</td>
+                        <td><pre><code>// 再帰呼び出し
+mergesort(a, begin, mid, w);
+mergesort(a, mid+1, end, w);
+
+// マージ処理
+for (k=begin; k&lt;=end; k++) {
+  if (i&gt;mid) w[k]=a[j++];
+  else if (j&gt;end) w[k]=a[i++];
+  else if (a[i]&lt;=a[j]) w[k]=a[i++];
+  else w[k]=a[j++];
+}</code></pre></td>
+                        <td>データの状態に依らず常にO(n log n)の性能が保証され、信頼性が高い。</td>
+                        <td>ソート済みの部分配列を併合するために、元の配列と同じサイズの作業領域が別途必要になる。</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-gray-800 no-wrap">クイックソート</td>
+                        <td class="no-wrap">O(n log n)</td>
+                        <td class="no-wrap">O(n<sup>2</sup>)</td>
+                        <td class="no-wrap">不安定</td>
+                        <td><pre><code>// パーティション処理
+int partition(int a[], int l, int r) {
+    int i = l - 1, j = r, pv = a[r];
+    while (1) {
+        while (comp(a[++i], pv));
+        while (i &lt; --j && comp(pv, a[j]));
+        if (i &gt;= j) break;
+        swap(&a[i], &a[j]);
+    }
+    swap(&a[i], &a[r]);
+    return i;
+}
+
+// 再帰呼び出し
+void sort2_i(int a[], int l, int r) {
+  if (l &gt;= r) return;
+  int v = partition(a, l, r);
+  sort2_i(a, l, v - 1);
+  sort2_i(a, v + 1, r);
+}</code></pre></td>
+                        <td>内部ループが効率的で、多くの実用的なケースで他のO(n log n)アルゴリズムより高速に動作する。</td>
+                        <td>ピボットの選択が偏ると計算量がO(n<sup>2</sup>)に悪化するリスクがあり、安定性も保証されない。</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-gray-800 no-wrap">ヒープソート</td>
+                        <td class="no-wrap">O(n log n)</td>
+                        <td class="no-wrap">O(n log n)</td>
+                        <td class="no-wrap">不安定</td>
+                        <td><pre><code>// ヒープ化処理
+void heapify(int a[], int i, int heap_size) {
+    int largest_child;
+    while ((largest_child = 2 * i + 1) &lt;= heap_size) {
+        if (largest_child &lt; heap_size && a[largest_child] &lt; a[largest_child + 1]) {
+            largest_child++;
+        }
+        if (a[i] &gt;= a[largest_child]) break;
+        swap(a, i, largest_child);
+        i = largest_child;
+    }
+}
+
+// ソート本体
+void heapsort(int a[], int n) {
+  for (int i = n / 2 - 1; i &gt;= 0; i--) {
+    heapify(a, i, n - 1);
+  }
+  while (n &gt; 1) {
+    swap(a, 0, n - 1);
+    heapify(a, 0, --n - 1);
+  }
+}</code></pre></td>
+                        <td>配列内で直接ヒープを構築するため追加メモリが不要でありながら、O(n log n)の性能を保つ。</td>
+                        <td>ヒープ構造の理解が必要で実装がやや複雑。また、同じ値の要素の元の順序が保存されない。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
