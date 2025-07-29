@@ -30,7 +30,7 @@ int Levenshtein(char s1[], char s2[], int s1_len, int s2_len) {
             if (s1[i] == s2[j]) {
                 r = 0;
             } else {
-                r = 1; // コ: ②
+                r = 3; // コ: ②
             }
 
             // 3つの操作(置換/一致、削除、挿入)のうち最小コストを選択
