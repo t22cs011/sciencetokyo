@@ -2,7 +2,7 @@
 #define N 3 // 配列 num_list の要素数
 #define MAX_NUM 10 // MAX_NUM 以内の最大値を求める
  
-int find_max_dp(int num_list[N]) {
+int knapsack(int num_list[N]) {
     int tmp_choice, tmp_not_choice;
     int table[N][MAX_NUM+1];
  
@@ -57,7 +57,7 @@ int find_max_dp(int num_list[N]) {
 int main() {
     int num_list[N] = {4,8,6};
  
-    int ans = find_max_dp(num_list);
+    int ans = knapsack(num_list);
     printf("%2dに最も近い選び方1：%2d\n",MAX_NUM,ans);
  
     return 0;
