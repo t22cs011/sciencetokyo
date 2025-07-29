@@ -32,13 +32,32 @@ int find_max_dp(int num_list[N]) {
         }
     }
  
+    // 最適解の復元
+    printf("選んだ要素: ");
+    int i = N-1, j = MAX_NUM;
+    while(i >= 0) {
+        if(i == 0) {
+            if(j >= num_list[0] && table[0][j] == num_list[0]) {
+                printf("%d ", num_list[0]);
+            }
+            break;
+        }
+        
+        if(j >= num_list[i] && table[i][j] == table[i-1][j - num_list[i]] + num_list[i]) {
+            printf("%d ", num_list[i]);
+            j -= num_list[i];
+        }
+        i--;
+    }
+    printf("\n");
+ 
     return table[N-1][MAX_NUM];
 }
  
 int main() {
     int num_list[N] = {4,8,6};
  
-    int ans = find_max_saiki(num_list,0,MAX_NUM);
+    int ans = find_max_dp(num_list);
     printf("%2dに最も近い選び方1：%2d\n",MAX_NUM,ans);
  
     return 0;
