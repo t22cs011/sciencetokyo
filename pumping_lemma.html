@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反復補題における文字列選択パターン</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+        }
+        code {
+            background-color: #e5e7eb; /* bg-gray-200 */
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 1.1em;
+            border-radius: 0.25rem; /* rounded */
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .selected-string {
+            color: #dc2626; /* text-red-600 */
+            font-weight: bold;
+        }
+        .table-container {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 sm:p-6 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-900">反復補題における代表的な文字列選択パターン</h1>
+        <p class="text-center text-gray-600 mb-8">
+            反復補題による証明では、補題の制約（反復部分の位置や構造）を突き、矛盾を導けるような「弱い部分」を持つ文字列を選択することが極めて重要である。以下に、言語の種類ごとに典型的な文字列の選び方とその戦略を示す。
+        </p>
+        <div class="table-container overflow-x-auto shadow-lg rounded-lg">
+            <table class="w-full text-base text-left text-gray-600">
+                <thead class="text-sm text-gray-700 uppercase bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-2 py-3 w-1/6">言語 (Language)</th>
+                        <th scope="col" class="px-2 py-3 w-3/12">正規言語でないことの証明 (RL-PL)</th>
+                        <th scope="col" class="px-2 py-3 w-3/12">文脈自由言語でないことの証明 (CFL-PL)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- L = {aⁿbⁿ} -->
+                    <tr class="bg-white border-b">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {aⁿbⁿ | n ≥ 0}</code></td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbᵖ</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code> と分割。<code>|wx| ≤ p</code> の制約により、反復部分 <code>x</code> は必ず先頭の <code>a</code> のみで構成される。<code>wx²y</code> を考えると <code>a</code> の数だけが増え、<code>b</code> との個数バランスが崩れる。
+                        </td>
+                        <td class="px-2 py-4 bg-gray-50">
+                            <p class="font-semibold">適用不可</p>この言語は文脈自由言語であるため、この補題では証明できない。
+                        </td>
+                    </tr>
+                    <!-- L = {wwᴿ} -->
+                    <tr class="bg-white border-b">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {wwᴿ | w ∈ {a,b}*}</code></td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbbaᵖ</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code> と分割。<code>x</code> は先頭の <code>a</code> のみで構成される。<code>wx²y</code> を考えると、前半の <code>a</code> の数だけが増え、後半の <code>a</code> の数と一致しなくなり、回文構造が崩れる。
+                        </td>
+                        <td class="px-2 py-4 bg-gray-50">
+                            <p class="font-semibold">適用不可</p>この言語は文脈自由言語であるため、この補題では証明できない。
+                        </td>
+                    </tr>
+                    <!-- L = {(ⁿa)ⁿ} -->
+                    <tr class="bg-white border-b">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {(ⁿa)ⁿ | n ≥ 0}</code> (入れ子構造)</td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = (ᵖa)ᵖ</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code> と分割。<code>x</code> は先頭の <code>(</code> のみで構成される。<code>wx²y</code> を考えると、開き括弧の数だけが増え、閉じ括弧との対応が取れなくなり、構造が崩れる。
+                        </td>
+                        <td class="px-2 py-4 bg-gray-50">
+                           <p class="font-semibold">適用不可</p>この言語は文脈自由言語であるため、この補題では証明できない。
+                        </td>
+                    </tr>
+                    <!-- L = {aᵏbᵐ | k ≠ m} -->
+                    <tr class="bg-white border-b">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {aᵏbᵐ | k ≠ m}</code> (不等式)</td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbᵖ⁺ᵖ!</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code>, <code>x = aʲ</code> (<code>1≤j≤p</code>)。<code>i = (p!/j) + 1</code> となるように <code>i</code> を選ぶと、反復後の文字列 <code>wxⁱy</code> は <code>aᵖ⁺ᵖ!bᵖ⁺ᵖ!</code> となり、<code>a</code> と <code>b</code> の数が等しくなってしまうため、言語の規則 (<code>k≠m</code>) に反する。
+                        </td>
+                        <td class="px-2 py-4 bg-gray-50">
+                            <p class="font-semibold">適用不可</p>この言語は文脈自由言語であるため、この補題では証明できない。
+                        </td>
+                    </tr>
+                    <!-- L = {ww} -->
+                    <tr class="bg-white border-b">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {ww | w ∈ {a,b}*}</code></td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbaᵖb</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code> と分割。<code>x</code> は先頭の <code>a</code> のみで構成される。<code>wx²y</code> を考えると、前半の <code>w</code> (<code>aᵖb</code>) の構造が変わり、後半の <code>w</code> と一致しなくなる。
+                        </td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbᵖaᵖbᵖ</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=uvwxy</code> と分割。<code>|vwx| ≤ p</code> の制約により、<code>v</code> と <code>x</code> は文字列全体をまたぐことはできない。<code>vwx</code> が前半の <code>aᵖbᵖ</code>、後半の <code>aᵖbᵖ</code>、中央の <code>bᵖaᵖ</code> のいずれにあっても、反復 (<code>uv²wx²y</code>) すると前半と後半の完全な一致関係が崩れる。
+                        </td>
+                    </tr>
+                    <!-- L = {aⁿbⁿcⁿ} -->
+                    <tr class="bg-white border-b">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {aⁿbⁿcⁿ | n ≥ 0}</code></td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbᵖcᵖ</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code> と分割。<code>x</code> は先頭の <code>a</code> のみで構成される。<code>wx²y</code> を考えると <code>a</code> の数だけが増え、<code>b</code> と <code>c</code> との個数バランスが崩れる。
+                        </td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = aᵖbᵖcᵖ</code><br><br>
+                            <p class="font-semibold">戦略:</p><code>s=uvwxy</code> と分割。<code>|vwx| ≤ p</code> の制約により、<code>v</code> と <code>x</code> は最大でも2種類の文字しか含むことができない。<code>uv²wx²y</code> を考えると、多くとも2種類の文字の数しか増えないため、3種類の文字すべての個数を等しく保つことができず、矛盾する。
+                        </td>
+                    </tr>
+                    <!-- L = {aᵖ | p is prime} -->
+                    <tr class="bg-white">
+                        <td class="px-2 py-4 font-medium text-gray-900"><code>L = {aᵖ | pは素数}</code></td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = a^q</code> (ただし <code>q</code> は <code>p</code> より大きい素数)<br><br>
+                            <p class="font-semibold">戦略:</p><code>s=wxy</code>, <code>x = a^k</code> (<code>k>0</code>) とする。文字列 <code>wxⁱy</code> の長さは <code>q + (i-1)k</code> となる。<code>i = q+1</code> と選ぶと、長さは <code>q + qk = q(1+k)</code> となり、これは合成数であるため言語 <code>L</code> に属さず、矛盾する。
+                        </td>
+                        <td class="px-2 py-4">
+                            <p class="font-semibold">選ぶ文字列:</p><code class="selected-string">s = a^q</code> (ただし <code>q</code> は <code>p</code> より大きい素数)<br><br>
+                            <p class="font-semibold">戦略:</p><code>s=uvwxy</code>, <code>v=a^k</code>, <code>x=a^l</code> (<code>k+l>0</code>) とする。文字列 <code>uvⁱwxⁱy</code> の長さは <code>q + (i-1)(k+l)</code> となる。<code>i = q+1</code> と選ぶと、長さは <code>q + q(k+l) = q(1+k+l)</code> となり、これは合成数であるため言語 <code>L</code> に属さず、矛盾する。
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

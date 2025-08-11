@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 // プロトタイプ宣言
-void func1(int a[], int i, int j);
-void func2(int a[], int m);
-void func3(int a[], int m);
+void heapify(int a[], int i, int j);
+void build_heap(int a[], int m);
+void heapsort(int a[], int m);
 void swap(int a[], int i, int j);
 void print_array(const char *label, int a[], int m);
 
@@ -16,7 +16,7 @@ void swap(int a[], int i, int j) {
 
 
 // MAX-HEAPIFY: "iを根とし、末尾がjである部分木"を最大ヒープ化する(iからjまでの部分木)
-void func1(int a[], int i, int j) { // jはヒープ(配列)のサイズ
+void heapify(int a[], int i, int j) { // jはヒープ(配列)のサイズ
     int k;
     while ((k = 2 * i + 1) <= j) { // (ア) kは左の子。子が存在する限りループ
         if (k < j && a[k] < a[k + 1]) { // (イ) もし右の子が存在し、かつ左の子より大きいなら
@@ -27,25 +27,25 @@ void func1(int a[], int i, int j) { // jはヒープ(配列)のサイズ
         }
         swap(a, i, k); // 親と大きい方の子を交換
         i = k; // 次の比較対象を、交換した子の位置に移動
-        // func1(a, k, j);
+        // heapify(a, k, j);
     }
 }
 
 // BUILD-MAX-HEAP: 配列全体を最大ヒープに変換する
-void func2(int a[], int m) {
+void build_heap(int a[], int m) {
     int i;
     for (i = m / 2 - 1; i >= 0; i--) { // 最後の非葉ノードから根に向かって実行
-        func1(a, i, m - 1); // 部分木をヒープ化
+        heapify(a, i, m - 1); // 部分木をヒープ化
     }
 }
 
 // HEAPSORT: ヒープソートの全工程を実行する
-void func3(int a[], int m) {
-    func2(a, m); // 最初に配列全体をヒープ化
+void heapsort(int a[], int m) {
+    build_heap(a, m); // 最初に配列全体をヒープ化
 
     while (m > 1) {
         swap(a, 0, m - 1); // 根（最大値）とヒープの末尾を交換
-        func1(a, 0, m - 2); // 縮小したヒープ(最後のインデックスはm-2)に対して再度ヒープ化を行う
+        heapify(a, 0, m - 2); // 縮小したヒープ(最後のインデックスはm-2)に対して再度ヒープ化を行う
         m--; // ヒープのサイズを1つ減らす
     }
 }
@@ -66,7 +66,7 @@ int main() {
 
     print_array("Original array", a, m); // ソート前の配列を表示
 
-    func3(a, m); // ヒープソートを実行
+    heapsort(a, m); // ヒープソートを実行
 
     print_array("Sorted array  ", a, m); // ソート後の配列を表示
 

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort Animation with Tree and C Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        .array-element-visual, .tree-node {
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .tree-line {
+            stroke: #4A5568; /* gray-600 */
+            stroke-width: 2;
+            transition: stroke 0.3s ease-in-out;
+        }
+        .tree-node text {
+            font-size: 1.25rem;
+            font-weight: bold;
+            fill: white;
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+        .code-line {
+            transition: background-color 0.3s ease-in-out;
+            display: block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.25rem;
+            white-space: pre;
+        }
+        .code-line.highlight {
+            background-color: #225469; /* a darker cyan */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-6xl text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">ヒープソート ステップ実行</h1>
+        <p class="text-lg text-gray-400">配列 {4, 1, 3, 2} がソートされる全過程を追う</p>
+    </div>
+
+    <div class="w-full max-w-6xl flex flex-col lg:flex-row gap-6">
+        <!-- 左側: ビジュアライゼーション -->
+        <div class="w-full lg:w-2/3 bg-gray-800 rounded-xl shadow-2xl p-6">
+            <!-- ヒープ木表示エリア -->
+            <div id="tree-container" class="w-full h-48 md:h-64 mb-6 flex justify-center items-center">
+                <svg id="tree-svg" width="100%" height="100%"></svg>
+            </div>
+
+            <!-- 配列表示エリア -->
+            <div id="array-container" class="flex justify-center items-end h-32 mb-4 relative">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+            
+            <!-- 凡例エリア -->
+            <div class="flex justify-center flex-wrap gap-x-4 gap-y-2 text-sm mt-4 text-gray-300">
+                <div class="flex items-center"><span class="w-4 h-4 bg-green-800 rounded mr-2"></span>ヒープ領域</div>
+                <div class="flex items-center"><span class="w-4 h-4 bg-green-500 rounded mr-2"></span>ソート済み</div>
+                <div class="flex items-center"><span class="w-4 h-4 rounded mr-2 ring-2 ring-yellow-400"></span>親ノード</div>
+                <div class="flex items-center"><span class="w-4 h-4 rounded mr-2 ring-2 ring-blue-400"></span>比較対象の子</div>
+                <div class="flex items-center"><span class="w-4 h-4 rounded mr-2 ring-2 ring-red-500"></span>交換対象</div>
+            </div>
+        </div>
+
+        <!-- 右側: コードと説明 -->
+        <div class="w-full lg:w-1/3 flex flex-col gap-6">
+            <!-- コード表示エリア -->
+            <div class="bg-gray-800 rounded-xl shadow-2xl p-4">
+                <h3 class="text-lg font-semibold text-cyan-400 mb-3 text-center">実行コード</h3>
+                <pre class="text-gray-300"><code class="language-c text-sm leading-relaxed">
+<span id="code-hs-0" class="code-line"><b>void heapsort</b>(int a[], int m) {</span>
+<span id="code-hs-1" class="code-line">  build_heap(a, m);</span>
+<span id="code-hs-2" class="code-line">  <b>while</b> (m > 1) {</span>
+<span id="code-hs-3" class="code-line">    swap(a, 0, m - 1);</span>
+<span id="code-hs-4" class="code-line">    heapify(a, 0, m - 2);</span>
+<span id="code-hs-5" class="code-line">    m--;</span>
+<span id="code-hs-6" class="code-line">  }</span>
+<span id="code-hs-7" class="code-line">}</span>
+
+<span id="code-bh-0" class="code-line mt-2"><b>void build_heap</b>(int a[], int m) {</span>
+<span id="code-bh-1" class="code-line">  <b>for</b> (int i=m/2-1; i>=0; i--) {</span>
+<span id="code-bh-2" class="code-line">    heapify(a, i, m - 1);</span>
+<span id="code-bh-3" class="code-line">  }</span>
+<span id="code-bh-4" class="code-line">}</span>
+
+<span id="code-h-0" class="code-line mt-2"><b>void heapify</b>(int a[], int i, int j) {</span>
+<span id="code-h-1" class="code-line">  int k;</span>
+<span id="code-h-2" class="code-line">  <b>while</b> ((k = 2 * i + 1) <= j) {</span>
+<span id="code-h-3" class="code-line">    <b>if</b> (k < j && a[k] < a[k+1]) {</span>
+<span id="code-h-4" class="code-line">      k++;</span>
+<span id="code-h-5" class="code-line">    }</span>
+<span id="code-h-6" class="code-line">    <b>if</b> (a[i] >= a[k]) {</span>
+<span id="code-h-7" class="code-line">      <b>break</b>;</span>
+<span id="code-h-8" class="code-line">    }</span>
+<span id="code-h-9" class="code-line">    swap(a, i, k);</span>
+<span id="code-h-10" class="code-line">   i = k;</span>
+<span id="code-h-11" class="code-line"> }</span>
+<span id="code-h-12" class="code-line">}</span>
+                </code></pre>
+            </div>
+            <!-- 説明エリア -->
+            <div class="bg-gray-800 rounded-xl shadow-2xl p-4 min-h-[100px] flex items-center justify-center">
+                <p id="explanation" class="text-center text-lg text-gray-300 font-medium"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作ボタン & プログレスエリア -->
+    <div class="mt-8 w-full max-w-6xl flex flex-col items-center">
+        <div class="flex space-x-4">
+            <button id="prev-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                前へ
+            </button>
+            <button id="next-btn" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                次へ
+            </button>
+        </div>
+        <div class="mt-4 w-full px-2">
+             <div class="text-center text-gray-400 mb-2" id="step-counter">ステップ 0 / 0</div>
+             <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-cyan-500 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // DOM要素の取得
+    const arrayContainer = document.getElementById('array-container');
+    const treeSvg = document.getElementById('tree-svg');
+    const explanation = document.getElementById('explanation');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const stepCounter = document.getElementById('step-counter');
+    const progressBar = document.getElementById('progress-bar');
+    const codeLines = document.querySelectorAll('.code-line');
+
+    // 初期設定
+    const initialArray = [4, 1, 3, 2];
+    let history = [];
+    let currentStep = -1;
+    const NODE_RADIUS = 24;
+
+    function swap(arr, i, j) {
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+
+    function recordState(arr, highlights, explanationText, activeCodeLines) {
+        history.push({
+            arrayState: [...arr],
+            highlights: { ...highlights },
+            explanation: explanationText,
+            activeCodeLines: activeCodeLines || []
+        });
+    }
+
+    function recordHeapify(a, i, j) {
+        let original_i = i;
+        recordState(a, { heap_range: [0, j], parent: i }, `heapify(a, ${i}, ${j}) を呼び出します。`, ['code-h-0']);
+        
+        while (true) {
+            let k = 2 * i + 1;
+            recordState(a, { heap_range: [0, j], parent: i }, `左の子 k=${k} をチェックします。`, ['code-h-2']);
+            if (k > j) {
+                recordState(a, { heap_range: [0, j], parent: i }, `子が存在しないため、ループを抜けます。`, ['code-h-2']);
+                break;
+            }
+
+            recordState(a, { heap_range: [0, j], parent: i, compare: [k] }, `右の子が存在し、かつ大きいかチェックします。`, ['code-h-3']);
+            if (k < j && a[k] < a[k + 1]) {
+                recordState(a, { heap_range: [0, j], parent: i, compare: [k, k+1] }, `右の子 ${k+1} (${a[k+1]}) の方が大きいので k を更新します。`, ['code-h-4']);
+                k++;
+            }
+
+            recordState(a, { heap_range: [0, j], parent: i, compare: [i, k] }, `親 ${i} (${a[i]}) と大きい方の子 ${k} (${a[k]}) を比較します。`, ['code-h-6']);
+            if (a[i] >= a[k]) {
+                recordState(a, { heap_range: [0, j], parent: i, compare: [i, k] }, `親が子以上なので、ヒープ条件を満たしています。`, ['code-h-7']);
+                break;
+            }
+            
+            recordState(a, { heap_range: [0, j], swap: [i, k] }, `親と子を交換します。`, ['code-h-9']);
+            swap(a, i, k);
+            
+            recordState(a, { heap_range: [0, j], parent: k, swap: [i, k] }, `次の比較対象を交換した子の位置に移動します。`, ['code-h-10']);
+            i = k;
+        }
+    }
+    
+    function recordBuildHeap(a, m) {
+        recordState(a, {}, `ヒープ構築フェーズを開始します。`, ['code-bh-0']);
+        for (let i = Math.floor(m / 2) - 1; i >= 0; i--) {
+            recordState(a, {}, `最後の非葉ノードから順にheapifyを適用します (i=${i})。`, ['code-bh-1']);
+            recordHeapify(a, i, m - 1);
+        }
+        recordState(a, { heap_range: [0, m - 1] }, `ヒープ構築完了。`, ['code-bh-4']);
+    }
+
+    function recordHeapsort(arr) {
+        let a = [...arr];
+        let m = a.length;
+        recordState(a, {}, "初期状態。", ['code-hs-0']);
+        
+        recordState(a, {}, "build_heapを呼び出します。", ['code-hs-1']);
+        recordBuildHeap(a, m);
+
+        recordState(a, { heap_range: [0, m - 1]}, "ソートフェーズを開始します。", ['code-hs-2']);
+        while (m > 1) {
+            recordState(a, { heap_range: [0, m - 1], sorted_range: [m, a.length-1], swap: [0, m - 1] }, `根(最大値 ${a[0]})とヒープの末尾 ${a[m-1]} を交換します。`, ['code-hs-3']);
+            swap(a, 0, m - 1);
+            
+            recordState(a, { heap_range: [0, m - 2], sorted_range: [m-1, a.length - 1] }, `交換完了。${a[m-1]}がソート済みになりました。`, ['code-hs-3']);
+            
+            recordState(a, { heap_range: [0, m - 2], sorted_range: [m-1, a.length - 1] }, `縮小したヒープに対してheapifyを実行します。`, ['code-hs-4']);
+            heapify(a, 0, m - 2); // This is the actual logic, but we record steps inside recordHeapify
+            
+            recordState(a, { heap_range: [0, m - 2], sorted_range: [m-1, a.length - 1] }, `ヒープサイズを縮小します (m=${m-1})。`, ['code-hs-5']);
+            m--;
+            recordState(a, { heap_range: [0, m - 1], sorted_range: [m, a.length - 1] }, `次のループへ。`, ['code-hs-2']);
+        }
+        recordState(a, { sorted_range: [0, a.length - 1] }, "ソートが完了しました！", ['code-hs-7']);
+    }
+    
+    // This is the actual heapify logic used by the sorter.
+    // The recordHeapify function is only for creating history steps.
+    function heapify(a, i, j) {
+        let k;
+        while ((k = 2 * i + 1) <= j) {
+            if (k < j && a[k] < a[k + 1]) {
+                k++;
+            }
+            if (a[i] >= a[k]) {
+                break;
+            }
+            swap(a, i, k);
+            i = k;
+        }
+    }
+
+
+    function renderTree(arrayState, highlights) {
+        treeSvg.innerHTML = '';
+        const width = treeSvg.clientWidth;
+        const height = treeSvg.clientHeight;
+        if (width === 0 || height === 0) return;
+        const nodePositions = [];
+
+        arrayState.forEach((_, i) => {
+            const level = Math.floor(Math.log2(i + 1));
+            const nodesInLevel = 2 ** level;
+            const indexInLevel = i - (nodesInLevel - 1);
+            
+            const y = level * (height / 3) + NODE_RADIUS + 10;
+            const x = (width / (nodesInLevel + 1)) * (indexInLevel + 1);
+            nodePositions.push({ x, y });
+        });
+
+        const heapSize = (highlights.heap_range ? highlights.heap_range[1] : -1) + 1;
+
+        for (let i = 1; i < heapSize; i++) {
+            const parentIndex = Math.floor((i - 1) / 2);
+            if(i >= nodePositions.length || parentIndex >= nodePositions.length) continue;
+            const p1 = nodePositions[i];
+            const p2 = nodePositions[parentIndex];
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+            line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
+            line.classList.add('tree-line');
+            treeSvg.appendChild(line);
+        }
+        
+        arrayState.forEach((value, i) => {
+            const pos = nodePositions[i];
+            if (!pos) return;
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.classList.add('tree-node');
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', pos.x); circle.setAttribute('cy', pos.y);
+            circle.setAttribute('r', NODE_RADIUS);
+
+            let fillClass = 'fill-gray-700';
+            if (highlights.heap_range && i >= highlights.heap_range[0] && i <= highlights.heap_range[1]) fillClass = 'fill-green-800';
+            if (highlights.sorted_range && i >= highlights.sorted_range[0] && i <= highlights.sorted_range[1]) fillClass = 'fill-green-500';
+            circle.classList.add(fillClass);
+
+            if (highlights.parent === i) circle.style.stroke = '#FBBF24'; // yellow-400
+            if (highlights.compare && highlights.compare.includes(i)) circle.style.stroke = '#60A5FA'; // blue-400
+            if (highlights.swap && highlights.swap.includes(i)) circle.style.stroke = '#F87171'; // red-400
+            if(circle.style.stroke) circle.style.strokeWidth = '4px';
+
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', pos.x); text.setAttribute('y', pos.y);
+            text.textContent = value;
+            
+            g.appendChild(circle); g.appendChild(text);
+            treeSvg.appendChild(g);
+        });
+    }
+
+    function renderStep(stepIndex) {
+        if (stepIndex < 0 || stepIndex >= history.length) return;
+        
+        currentStep = stepIndex;
+        const state = history[currentStep];
+        const { arrayState, highlights, explanation: explanationText, activeCodeLines } = state;
+
+        // Code highlight
+        codeLines.forEach(line => line.classList.remove('highlight'));
+        activeCodeLines.forEach(id => document.getElementById(id)?.classList.add('highlight'));
+
+        // Array render
+        arrayContainer.innerHTML = '';
+        arrayState.forEach((value, index) => {
+            const elementWrapper = document.createElement('div');
+            elementWrapper.className = 'flex flex-col items-center mx-1 md:mx-2';
+            elementWrapper.style.width = '60px';
+
+            const element = document.createElement('div');
+            element.className = 'array-element-visual w-16 h-16 flex items-center justify-center text-2xl font-bold rounded-lg shadow-md';
+            
+            let classes = 'bg-gray-700';
+            if (highlights.heap_range && index >= highlights.heap_range[0] && index <= highlights.heap_range[1]) classes = 'bg-green-800';
+            if (highlights.sorted_range && index >= highlights.sorted_range[0] && index <= highlights.sorted_range[1]) classes = 'bg-green-500';
+            element.classList.add(...classes.split(' '));
+
+            if (highlights.parent === index) element.classList.add('ring-4', 'ring-yellow-400');
+            if (highlights.compare && highlights.compare.includes(index)) element.classList.add('ring-4', 'ring-blue-400');
+            if (highlights.swap && highlights.swap.includes(index)) element.classList.add('ring-4', 'ring-red-500', 'animate-pulse');
+            
+            element.textContent = value;
+            
+            const indexLabel = document.createElement('div');
+            indexLabel.className = 'mt-2 text-sm text-gray-400';
+            indexLabel.textContent = `[${index}]`;
+
+            elementWrapper.appendChild(element);
+            elementWrapper.appendChild(indexLabel);
+            arrayContainer.appendChild(elementWrapper);
+        });
+        
+        renderTree(arrayState, highlights);
+        explanation.textContent = explanationText;
+        updateControls();
+    }
+
+    function updateControls() {
+        stepCounter.textContent = `ステップ ${currentStep + 1} / ${history.length}`;
+        progressBar.style.width = `${((currentStep + 1) / history.length) * 100}%`;
+        prevBtn.disabled = currentStep <= 0;
+        nextBtn.disabled = currentStep >= history.length - 1;
+        prevBtn.classList.toggle('btn-disabled', prevBtn.disabled);
+        nextBtn.classList.toggle('btn-disabled', nextBtn.disabled);
+    }
+    
+    function initialize() {
+        history = [];
+        // Create a separate sorter instance to avoid mixing recording logic with sorting logic
+        let sorterArray = [...initialArray];
+        let sorterM = sorterArray.length;
+        
+        recordState(sorterArray, {}, "初期状態。", ['code-hs-0']);
+        recordState(sorterArray, {}, "build_heapを呼び出します。", ['code-hs-1']);
+        
+        // Record build_heap
+        recordState(sorterArray, {}, `ヒープ構築フェーズを開始します。`, ['code-bh-0']);
+        for (let i = Math.floor(sorterM / 2) - 1; i >= 0; i--) {
+            recordState(sorterArray, {}, `最後の非葉ノードから順にheapifyを適用します (i=${i})。`, ['code-bh-1', 'code-bh-2']);
+            recordHeapify(sorterArray, i, sorterM - 1);
+            heapify(sorterArray, i, sorterM - 1); // Apply actual change
+        }
+        recordState(sorterArray, { heap_range: [0, sorterM - 1] }, `ヒープ構築完了。`, ['code-bh-3', 'code-bh-4']);
+
+
+        // Record sort phase
+        recordState(sorterArray, { heap_range: [0, sorterM - 1]}, "ソートフェーズを開始します。", ['code-hs-2']);
+        while (sorterM > 1) {
+            recordState(sorterArray, { heap_range: [0, sorterM - 1], sorted_range: [sorterM, initialArray.length-1], swap: [0, sorterM - 1] }, `根(最大値 ${sorterArray[0]})とヒープの末尾 ${sorterArray[sorterM-1]} を交換します。`, ['code-hs-3']);
+            swap(sorterArray, 0, sorterM - 1);
+            
+            recordState(sorterArray, { heap_range: [0, sorterM - 2], sorted_range: [sorterM-1, initialArray.length - 1] }, `交換完了。${sorterArray[sorterM-1]}がソート済みになりました。`, ['code-hs-3']);
+            
+            sorterM--;
+            recordState(sorterArray, { heap_range: [0, sorterM - 1], sorted_range: [sorterM, initialArray.length - 1] }, `ヒープサイズを縮小します (m=${sorterM})。`, ['code-hs-5']);
+            
+            if (sorterM > 0) {
+                recordState(sorterArray, { heap_range: [0, sorterM - 1], sorted_range: [sorterM, initialArray.length - 1] }, `縮小したヒープに対してheapifyを実行します。`, ['code-hs-4']);
+                recordHeapify(sorterArray, 0, sorterM - 1);
+                heapify(sorterArray, 0, sorterM - 1); // Apply actual change
+            }
+             recordState(sorterArray, { heap_range: [0, sorterM - 1], sorted_range: [sorterM, initialArray.length - 1] }, `次のループへ。`, ['code-hs-2']);
+        }
+        recordState(sorterArray, { sorted_range: [0, initialArray.length - 1] }, "ソートが完了しました！", ['code-hs-6', 'code-hs-7']);
+
+        renderStep(0);
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < history.length - 1) renderStep(currentStep + 1);
+    });
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) renderStep(currentStep - 1);
+    });
+    window.addEventListener('resize', () => {
+        if(currentStep >= 0) renderStep(currentStep)
+    });
+
+    window.onload = initialize;
+
+</script>
+</body>
+</html>

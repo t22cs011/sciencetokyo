@@ -52,7 +52,7 @@ int main() {
     int result = longest_common_subsequence(s1, s2, s1_len, s2_len);
     printf("s1: %s\n", s1);
     printf("s2: %s\n", s2);
-    printf("最長共通部分列の長さ: %d\n", result); // "ABC"または"ADC"の長さである3が出力される
+    printf("最長共通部分列の長さ: %d\n", result); // "ABC"の長さである3が出力される
 
     return 0;
 }

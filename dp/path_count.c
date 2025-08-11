@@ -63,9 +63,9 @@ int count_path(struct Node n, int N) {
         }
 
         // 問8
-        t++;
-        if(t < 5)
-            // printf("%d %d\n", x, y);
+        // t++;
+        // if(t < 5)
+        //     printf("%d %d\n", x, y);
         
         n_new.x = x;
         n_new.y = y;
@@ -73,11 +73,11 @@ int count_path(struct Node n, int N) {
 
         // 再帰呼び出しで、次のノードからの経路数を加算 (「ネ」「ノ」)
         res += count_path(n_new, N);
-        //問9
-        // t++;
-        // if(t < 5)
-        //     // printf("count_path %d\n", res);
-        //     printf("%d %d\n", x, y);
+        // 問9
+        t++;
+        if(t < 5)
+            // printf("count_path %d\n", res);
+            printf("%d %d\n", x, y);
     }
 
     return res;

@@ -1,118 +1,107 @@
 #include <stdio.h>
 
-// comp関数の呼び出し回数をカウントするグローバル変数
-int comp_count = 0;
+// --- グローバル変数と定数 ---
+#define MAX_LENGTH 1000
+int x[MAX_LENGTH];
 
-// 配列の内容を出力するヘルパー関数
-void print_array(const char *name, int a[], int n) {
-    printf("%s: {", name);
-    for (int i = 0; i < n; i++) {
-        printf("%d", a[i]);
-        if (i < n - 1) {
-            printf(", ");
+// --- 関数のプロトタイプ宣言 ---
+void B(int il, int m, int ir);
+void A(int il, int ir);
+void D(int il, int ir);
+void print_array(const char* label, int n);
+
+
+// --- 図7.1: マージ処理を行う関数B ---
+void B(int il, int m, int ir) {
+    int i, j, k;
+    int temp[MAX_LENGTH];
+
+    // マージ処理（xからtempへ）
+    i = il;
+    j = m + 1;
+    for (k = il; k <= ir; k++) {
+        if (i > m) {
+            temp[k] = x[j++];
+        } else if (j > ir) {
+            temp[k] = x[i++];
+        } else if (x[i] <= x[j]) {
+            temp[k] = x[i++];
+        } else {
+            temp[k] = x[j++];
         }
     }
-    printf("}\n");
-}
-
-int comp(int a, int b) {
-    // 関数が呼ばれたのでカウンターをインクリメント
-    comp_count++;
-    if (a < b) {
-        return 1;
-    } else {
-        return 0;
+    // 結果のコピー（tempからxへ）
+    for (k = il; k <= ir; k++) {
+        x[k] = temp[k];
     }
 }
 
-void swap(int *a, int *b) {
-    int t;
-    t = *a;
-    *a = *b;
-    *b = t;
+// --- 図7.1: 再帰方式のマージソート関数A ---
+void A(int il, int ir) {
+    int m;
+
+    if (il >= ir) return;
+    m = (il + ir) / 2;
+    A(il, m);
+    A(m + 1, ir);
+    B(il, m, ir);
 }
 
-// バブルソート
-void sort1(int a[], int n) {
-    int i, j;
-    for (i = 0; i < n - 1; i++) {
-        for (j = n - 1; j > i; j--) {
-            if (comp(a[j], a[j - 1])) {
-                swap(&a[j], &a[j - 1]);
+// --- 図7.2: 非再帰方式のマージソート関数D ---
+void D(int il, int ir) {
+    int m, i, j, size;
+
+    size = 1;
+    while (size <= (ir - il)) {
+        for (i = il; i <= ir; i = i + size * 2) {
+            j = i + size * 2 - 1;
+            m = (i + j) / 2;
+
+            /*
+             * 画像の空欄部分に相当する処理。
+             * このままでは配列の境界外にアクセスする危険があるため、
+             * 少なくともマージ対象の右半分が存在する場合にのみ
+             * 実行するよう安全対策を施している。
+             */
+            if (m < ir) {
+                // jが配列の末尾を超える場合は、末尾で切り詰める
+                int end_j = (j > ir) ? ir : j;
+                B(i, m, end_j);
             }
         }
+        size = size * 2;
     }
 }
 
-// クイックソートのパーティション分割
-int partition(int a[], int l, int r) {
-    int i, j, pv;
-    i = l - 1;
-    j = r;
-    pv = a[r];
-    while (1) {
-        while (comp(a[++i], pv));
-        // 短絡評価を考慮した条件
-        while (i < j && comp(pv, a[--j]));
-        if (i >= j) {
-            break;
-        }
-        swap(&a[i], &a[j]);
+// --- 配列表示用のヘルパー関数 ---
+void print_array(const char* label, int n) {
+    printf("%s", label);
+    for (int i = 0; i < n; i++) {
+        printf("%d ", x[i]);
     }
-    swap(&a[i], &a[r]);
-    return i;
+    printf("\n");
 }
 
-// クイックソート（再帰部分）
-void sort2_i(int a[], int l, int r) {
-    int v;
-    if (l >= r) {
-        return;
-    }
-    v = partition(a, l, r);
-    sort2_i(a, l, v - 1);
-    sort2_i(a, v + 1, r);
-}
 
-// クイックソート（初期呼び出し）
-void sort2(int a[], int n) {
-    sort2_i(a, 0, n - 1);
-}
-
+// --- 実行とテストのためのmain関数 ---
 int main() {
-    // --- 問題1の検証 ---
-    printf("## 問題1 (sort1: バブルソート) の検証\n");
-    int b[] = {13, 9, 6, 1, 4};
-    int n_b = 5;
-
-    printf("ソート前: ");
-    print_array("b", b, n_b);
-
-    // カウンターをリセット
-    comp_count = 0;
-    sort1(b, n_b);
-
-    printf("ソート後: ");
-    print_array("b", b, n_b);
-    printf("-> sort1でのcomp呼び出し回数: %d\n", comp_count);
-
-    printf("\n----------------------------------------\n\n");
-
-    // --- 問題4の検証 ---
-    printf("## 問題4 (sort2: クイックソート) の検証\n");
-    int c[] = {9, 8, 5, 1, 2};
-    int n_c = 5;
-
-    printf("ソート前: ");
-    print_array("c", c, n_c);
-
-    // カウンターをリセット
-    comp_count = 0;
-    sort2(c, n_c);
+    printf("--- 関数A（再帰版）のテスト ---\n");
+    int data_A[] = {9, 4, 3, 2, 8, 5, 1, 7};
+    int n_A = sizeof(data_A) / sizeof(data_A[0]);
+    for(int i=0; i<n_A; i++) x[i] = data_A[i];
     
-    printf("ソート後: ");
-    print_array("c", c, n_c);
-    printf("-> sort2でのcomp呼び出し回数: %d\n", comp_count);
+    print_array("ソート前: ", n_A);
+    A(0, n_A - 1);
+    print_array("ソート後: ", n_A);
+    
+    printf("\n--- 関数D（非再帰版）のテスト ---\n");
+    int data_D[] = {10, 7, 1, 5, 2, 9, 6, 3, 8, 4};
+    int n_D = sizeof(data_D) / sizeof(data_D[0]);
+    for(int i=0; i<n_D; i++) x[i] = data_D[i];
+
+    print_array("ソート前: ", n_D);
+    D(0, n_D - 1);
+    print_array("ソート後: ", n_D);
 
     return 0;
 }
